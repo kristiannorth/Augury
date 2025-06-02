@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swarmscape/Auspex - Welcome to the Future!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #C0C0C0; /* Classic 90s Silver/Gray */
+            color: #000000; /* Black text */
+            margin: 0;
+            padding: 0;
+        }
+        .main-container {
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #FFFFFF; /* White content area */
+            border: 3px ridge #808080; /* Gray ridge border */
+            padding: 15px;
+        }
+        header {
+            background-color: #000080; /* Navy Blue */
+            color: #FFFF00; /* Yellow text */
+            padding: 10px;
+            text-align: center;
+            border-bottom: 3px solid #FFFF00; /* Yellow border */
+        }
+        header h1 {
+            font-family: "Comic Sans MS", "Comic Sans", cursive; /* Quintessential 90s font */
+            font-size: 28px;
+            margin: 0;
+            animation: blinkEffect 1.5s infinite;
+        }
+        nav {
+            background-color: #808080; /* Gray */
+            padding: 8px;
+            text-align: center;
+            border-bottom: 2px solid #000000;
+        }
+        .nav-link {
+            color: #FFFF00; /* Yellow */
+            text-decoration: underline;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .nav-link:hover {
+            color: #FF00FF; /* Magenta hover */
+        }
+        section {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px dashed #000080; /* Navy dashed border for sections */
+            background-color: #F0F0F0; /* Light gray section background */
+        }
+        h2 {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 24px;
+            color: #000080; /* Navy */
+            border-bottom: 2px solid #000080;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 20px;
+            color: #AA0000; /* Dark Red */
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .content-box {
+            border: 1px solid #000000;
+            background-color: #E8E8E8;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .boid-rule {
+            border: 1px solid #008000; /* Green */
+            background-color: #D0F0D0; /* Light Green */
+            padding: 5px;
+            margin-bottom: 5px;
+        }
+        #canvas-container {
+            border: 5px outset #808080;
+            background-color: #FFFFFF; /* White canvas background */
+            margin: 10px auto;
+            max-width: 600px; /* Limit canvas width */
+            aspect-ratio: 16 / 9;
+        }
+        #augury-log {
+            height: 180px;
+            background-color: #000000; /* Black background */
+            color: #00FF00; /* Bright Green text */
+            border: 2px inset #FFFFFF; /* White inset border */
+            padding: 8px;
+            overflow-y: scroll;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+        }
+        #augury-log p {
+            margin-bottom: 3px;
+            border-bottom: 1px dotted #008000; /* Dotted green divider */
+        }
+        input[type="text"] {
+            border: 2px inset #808080;
+            padding: 5px;
+            font-family: Arial, sans-serif;
+        }
+        .btn-90s {
+            background-color: #C0C0C0; /* Silver */
+            color: #000000; /* Black */
+            border: 2px outset #FFFFFF; /* White outset for 3D effect */
+            padding: 5px 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-90s:active {
+            border-style: inset;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+            margin: 15px auto;
+            padding:10px;
+            border: 2px solid #000000;
+            background-color: #FFFFFF;
+            height: 300px; 
+            max-height: 350px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            border-top: 3px double #000080; /* Navy double border */
+            font-size: 12px;
+            background-color: #808080;
+            color: #FFFFFF;
+        }
+        hr {
+            border: none;
+            border-top: 3px dashed #FF0000; /* Bright red dashed HR */
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marqueeEffect 15s linear infinite;
+            color: #FFFF00; /* Yellow marquee text */
+            font-weight: bold;
+        }
+        @keyframes marqueeEffect {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        @keyframes blinkEffect {
+            50% { opacity: 0; }
+        }
+        .under-construction-gif {
+            width: 50px;
+            height: 50px;
+            background-color: yellow;
+            border: 2px solid black;
+            display: flex;
+            flex-direction:column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            text-align:center;
+            margin-right:10px;
+            animation: blinkEffect 0.8s infinite;
+        }
+         .under-construction-gif span { font-size: 18px; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <div class="under-construction-gif"><span>🚧</span>工事中</div>
+            <h1>SWARMSCAPE / AUSPEX 2025</h1>
+            <div class="under-construction-gif"><span>🚧</span>工事中</div>
+        </div>
+        <div style="width: 100%; overflow: hidden;">
+            <div class="marquee-text">
+                WELCOME TO THE INTERACTIVE ZONE! PREPARE FOR THE FUTURE OF ART! MACHINE AGENCIES X MUTEK 2025!!!
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <a href="#welcome" class="nav-link">HOME</a> |
+        <a href="#ecosystem" class="nav-link">The System</a> |
+        <a href="#simulation" class="nav-link">LIVE DEMO!</a> |
+        <a href="#augur" class="nav-link">A.I. Zone</a> |
+        <a href="#anarchive" class="nav-link">History Files</a> |
+        <a href="#about" class="nav-link">Creators</a>
+    </nav>
+
+    <div class="main-container">
+        <section id="welcome">
+            <h2 style="text-align:center; color: #FF0000; animation: blinkEffect 1s step-end infinite;">
+                <font size="+2">Anarchival Reanimation - THE NEXT LEVEL!</font>
+            </h2>
+            <p align="center">
+                Hello Netizen! You've surfed into the interactive exploration of the <strong>Swarmscape/Auspex</strong> project.
+                This is not your grandma's webpage! Get ready to see an artificial ecosystem, learn about A.I. interpretations,
+                and find out how art becomes a LIVING, EVOLVING archive. Click the links above to navigate!
+            </p>
+            <p align="center">
+                <img src="https://www.useragentman.com/tests/dragNdrop/images/goodnews.gif" alt="Retro computer gif - Placeholder" width="100"> 
+                <font color="green" size="+1">This site is BEST VIEWED with Netscape Navigator 4.0 or Internet Explorer 5.0 at 800x600 resolution!</font>
+            </p>
+        </section>
+        <hr>
+        <section id="ecosystem">
+            <h2>The Generative Ecosystem - HOW IT WORKS!</h2>
+            <p>The project is built on some seriously cool ideas: a smart computer simulation, a way for sounds to be chosen, and even a nature-inspired sound organizer! It's like a digital terrarium where cool soundscapes just... happen!</p>
+            <br>
+            <table width="100%" border="1" cellpadding="5" cellspacing="0" bgcolor="#DDDDDD">
+                <tr>
+                    <td width="33%" valign="top">
+                        <h3>1. Swarmscape: Boids Algorithm</h3>
+                        <div class="content-box">
+                        <p>The system's little critters (we call 'em "boids") follow three simple rules, like birds in a flock. It's all about emergent behavior - that means complex stuff from simple rules!</p>
+                        <ul>
+                            <li class="boid-rule"><strong>Separation:</strong> Don't bump into your buddies!</li>
+                            <li class="boid-rule"><strong>Alignment:</strong> Try to go the same way as nearby buddies.</li>
+                            <li class="boid-rule"><strong>Cohesion:</strong> Stick close to the center of your group.</li>
+                        </ul>
+                        </div>
+                    </td>
+                    <td width="33%" valign="top">
+                        <h3>2. Auspex: Sound Choices</h3>
+                        <div class="content-box">
+                        <p>The "Auspex" part lets boids pick sounds. It uses a tool called FluCoMa to map out a huge sound library by their "timbre" (fancy word for sound character). Boids then cruise this "sound map" and pick tunes based on how they're feeling or moving!</p>
+                        <p><font size="-1" color="#0000FF">Example: Fast boids might pick sharp sounds, calm boids pick smooth sounds.</font></p>
+                        </div>
+                    </td>
+                    <td width="34%" valign="top">
+                        <h3>3. Acoustic Niche Theory</h3>
+                        <div class="content-box">
+                        <p>To stop it sounding like a mess, boids find their own "sonic space" or frequency, like animals in a jungle. This keeps the soundscape clear and interesting!</p>
+                        <div style="border:1px solid #000; padding:5px; margin-top:5px; background-color:#FFFFFF;">
+                            <div style="background-color:#FFCCCC; padding:3px; margin-bottom:2px; border:1px solid red;">Niche 1 (High Sounds)</div>
+                            <div style="background-color:#CCFFCC; padding:3px; margin-bottom:2px; border:1px solid green;">Niche 2 (Mid Sounds)</div>
+                            <div style="background-color:#CCCCFF; padding:3px; border:1px solid blue;">Niche 3 (Low Sounds)</div>
+                        </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </section>
+        <hr>
+        <section id="simulation">
+            <h2><font color="purple">LIVE Simulation! - WATCH THE BOIDS!</font></h2>
+            <p align="center">Below is a <blink_css>LIVE</blink_css> view of the Swarmscape system. Each dot is a "boid". See them flock! Their behavior makes the sounds and feeds the A.I. brain!</p>
+            <div id="canvas-container" style="height: 350px; width:100%; max-width:600px;"></div>
+            <p align="center"><font size="-1">Use 'The A.I. Zone' below to mess with the simulation!</font></p>
+        </section>
+        <hr>
+        <section id="augur">
+            <h2>The A.I. Zone - Talk to the Machine!</h2>
+            <p>This is where the A.I. (an LLM, that's a Large Language Model) acts like an "Augur" from ancient times, telling us what it thinks about the boids. You can also type commands to change how the boids behave!</p>
+            
+            <table width="100%" border="0" cellpadding="10">
+                <tr>
+                    <td width="50%" valign="top">
+                        <h3><font color="#008000">Live Auguries from the A.I.</font></h3>
+                        <p><font size="-1">The A.I. watches the swarm and types out its thoughts. Spooky!</font></p>
+                        <div id="augury-log">
+                            <p>Awaiting A.I. connection...</p>
+                        </div>
+                    </td>
+                    <td width="50%" valign="top">
+                        <h3><font color="#008000">Influence the Swarm!</font></h3>
+                        <p><font size="-1">Type commands like "calm", "chaotic", "fast", "slow", "together", "apart".</font></p>
+                        <input type="text" id="userInput" size="30" placeholder="Type command here...">
+                        <button id="submitCommand" class="btn-90s">SEND!</button>
+                        
+                        <h3 style="margin-top:20px;"><font color="#008000">System Feedback:</font></h3>
+                        <p><font size="-1">Chart showing "Average Boid Speed" changing with your commands!</font></p>
+                        <div class="chart-container" style="height:250px;">
+                             <canvas id="paramChart"></canvas>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </section>
+        <hr>
+        <section id="anarchive">
+            <h2>The Anarchive - A Living History!</h2>
+            <p>This isn't just a one-time art piece! It's documented by an "anarchive" - a constantly updating record of everything that happens. It shows how the system changes, how people interact, and what the A.I. says. It's art that remembers!</p>
+            <div align="center" style="margin-bottom:10px;">
+                 <button id="anarchive-events-btn" class="btn-90s anarchive-btn">System Events Data</button>
+                 <button id="anarchive-interactions-btn" class="btn-90s anarchive-btn">User Interactions Data</button>
+            </div>
+            <div class="chart-container" style="height:350px;">
+                 <canvas id="anarchiveChart"></canvas>
+            </div>
+        </section>
+        <hr>
+        <section id="about">
+            <h2>About the Project & The Creators!</h2>
+            <p>This awesome project is from <strong>Mike Cassidy & Kristian North</strong> (Concordia University / Hexagram) for the Machine Agencies X MUTEK 2025 Forum. They're bringing back "Swarmscape/Auspex" with new A.I. smarts and this cool web anarchive thing. They're pushing art into the future!</p>
+            <p align="center">
+                <font size="+1">Check out their homepages (Click the Geocities-style buttons!):</font><br><br>
+                <a href="https://www.mikecassidy.io/" target="_blank" rel="noopener noreferrer"><img src="https://web.archive.org/web/20091027004600im_/http://geocities.com/clipart/buttons/general/b_view_site2.gif" alt="Mike Cassidy Site"></a>
+                <br><br>
+                <a href="https://kristiannorth.com/" target="_blank" rel="noopener noreferrer"><img src="https://web.archive.org/web/20091027101020im_/http://geocities.com/clipart/buttons/general/home.gif" alt="Kristian North Site"></a>
+            </p>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 1998-2025 Swarmscape/Auspex Interactive Zone. All rights reserved by the artists, probably.</p>
+        <p>This page was last updated: <script>document.write(new Date().toLocaleDateString());</script></p>
+        <p>
+            <img src="https://web.archive.org/web/20030806084855im_/http://www.geocities.com/Athens/Olympus/4021/netscape.gif" alt="Netscape Now!">
+            <img src="https://web.archive.org/web/20090829160537im_/http://geocities.com/clipart/p_buttons/powered_by/ie_logo.gif" alt="IE Compatible">
+            <img src="https://web.archive.org/web/20091026213506/http://geocities.com/html_images/viewsource.gif" alt="View Source">
+        </p>
+        <p>Site Visits: <span id="hitCounter">0</span> (This is a simulation, obviously!)</p>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const hitCounterElement = document.getElementById('hitCounter');
+    let hits = Math.floor(Math.random() * 1000) + 5000;
+    hitCounterElement.textContent = hits.toLocaleString();
+    setInterval(() => {
+        hits += Math.floor(Math.random() * 3) + 1;
+        hitCounterElement.textContent = hits.toLocaleString();
+    }, 3000);
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            // Basic smooth scroll not very 90s, direct jump is more authentic.
+            // const targetId = link.getAttribute('href');
+            // document.querySelector(targetId).scrollIntoView({ behavior: 'auto' });
+        });
+    });
+    
+    let flock = [];
+    const boidParams = {
+        maxForce: 0.1,
+        maxSpeed: 2,
+        perceptionRadius: 40,
+        align: 1.0,
+        cohesion: 1.0,
+        separation: 1.5,
+        targetVelocity: 2,
+        agentSize: 5,
+    };
+    let p5Instance;
+
+    const sketch = (p) => {
+        p.setup = () => {
+            const canvasContainer = document.getElementById('canvas-container');
+            const canvas = p.createCanvas(canvasContainer.offsetWidth, canvasContainer.offsetHeight);
+            canvas.parent('canvas-container');
+            for (let i = 0; i < 60; i++) { flock.push(new Boid(p)); }
+            p.frameRate(20); // More 90s-like frame rate
+        };
+        p.draw = () => {
+            p.background(255); // Simple white background
+            for (let boid of flock) {
+                boid.edges(p);
+                boid.flock(flock, p, boidParams);
+                boid.update();
+                boid.show(p);
+            }
+        };
+        p.windowResized = () => {
+            const canvasContainer = document.getElementById('canvas-container');
+             if (canvasContainer.offsetWidth > 0 && canvasContainer.offsetHeight > 0) {
+                p.resizeCanvas(canvasContainer.offsetWidth, canvasContainer.offsetHeight);
+            }
+        };
+    };
+
+    class Boid {
+        constructor(p) {
+            this.position = p.createVector(p.random(p.width), p.random(p.height));
+            this.velocity = p5.Vector.random2D();
+            this.velocity.setMag(p.random(1, 2));
+            this.acceleration = p.createVector();
+            this.color = p.color(p.random(255), p.random(255), p.random(255)); // Random bright colors
+        }
+        edges(p) {
+            if (this.position.x > p.width) this.position.x = 0;
+            else if (this.position.x < 0) this.position.x = p.width;
+            if (this.position.y > p.height) this.position.y = 0;
+            else if (this.position.y < 0) this.position.y = p.height;
+        }
+        align(boids,p,params){let steering=p.createVector();let total=0;for(let other of boids){let d=p.dist(this.position.x,this.position.y,other.position.x,other.position.y);if(other!=this&&d<params.perceptionRadius){steering.add(other.velocity);total++;}}if(total>0){steering.div(total);steering.setMag(params.maxSpeed);steering.sub(this.velocity);steering.limit(params.maxForce);}return steering;}
+        cohesion(boids,p,params){let steering=p.createVector();let total=0;for(let other of boids){let d=p.dist(this.position.x,this.position.y,other.position.x,other.position.y);if(other!=this&&d<params.perceptionRadius){steering.add(other.position);total++;}}if(total>0){steering.div(total);steering.sub(this.position);steering.setMag(params.maxSpeed);steering.sub(this.velocity);steering.limit(params.maxForce);}return steering;}
+        separation(boids,p,params){let steering=p.createVector();let total=0;for(let other of boids){let d=p.dist(this.position.x,this.position.y,other.position.x,other.position.y);if(other!=this&&d<params.perceptionRadius*0.7&&d>0){let diff=p5.Vector.sub(this.position,other.position);diff.div(d*d);steering.add(diff);total++;}}if(total>0){steering.div(total);steering.setMag(params.maxSpeed);steering.sub(this.velocity);steering.limit(params.maxForce);}return steering;}
+        flock(boids,p,params){this.acceleration.set(0,0);let alignment=this.align(boids,p,params);let cohesion=this.cohesion(boids,p,params);let separation=this.separation(boids,p,params);alignment.mult(params.align);cohesion.mult(params.cohesion);separation.mult(params.separation);this.acceleration.add(alignment);this.acceleration.add(cohesion);this.acceleration.add(separation);}
+        update(){this.position.add(this.velocity);this.velocity.add(this.acceleration);this.velocity.limit(boidParams.maxSpeed);}
+        show(p){p.strokeWeight(boidParams.agentSize);p.stroke(this.color);p.point(this.position.x,this.position.y);}
+    }
+    
+    const canvasContainerForP5 = document.getElementById('canvas-container');
+     if (canvasContainerForP5 && canvasContainerForP5.offsetWidth > 0 && canvasContainerForP5.offsetHeight > 0) {
+        p5Instance = new p5(sketch);
+    } else {
+        setTimeout(() => {
+            if (canvasContainerForP5 && canvasContainerForP5.offsetWidth > 0 && canvasContainerForP5.offsetHeight > 0) {
+                 p5Instance = new p5(sketch);
+            }
+        }, 500);
+    }
+     window.addEventListener('resize', () => {
+        if (p5Instance && canvasContainerForP5.offsetWidth > 0 && canvasContainerForP5.offsetHeight > 0) {
+            p5Instance.resizeCanvas(canvasContainerForP5.offsetWidth, canvasContainerForP5.offsetHeight);
+        }
+    });
+
+    const auguryLog = document.getElementById('augury-log');
+    const userInput = document.getElementById('userInput');
+    const submitCommandBtn = document.getElementById('submitCommand');
+    const auguryResponses={chaotic:"!!!CHAOS MODE ACTIVATED!!! Boids are going WILD!",fast:"FASTER! FASTER! The boids pick up SPEED!",calm:"Chillin' out... Boids are now calm and collected.",slow:"Sloooowing down... The boids take it easy.",together:"Group hug! Boids are sticking together.",apart:"Social distancing! Boids are spreading out.",default:"Command Received! The boids ponder your input..."};
+    function addAugury(text){const p=document.createElement('p');p.textContent=`[${new Date().toLocaleTimeString()}] ${text}`;auguryLog.prepend(p);if(auguryLog.children.length>10){auguryLog.removeChild(auguryLog.lastChild);}}
+    addAugury("A.I. ONLINE! Waiting for boid data...");
+    function handleCommand(){const command=userInput.value.toLowerCase().trim();if(!command)return;let responseKey='default';if(command.includes('chaotic')){boidParams.cohesion=0.3;boidParams.separation=2.5;boidParams.align=0.5;boidParams.targetVelocity=4;responseKey='chaotic';}else if(command.includes('calm')){boidParams.cohesion=1.8;boidParams.separation=0.7;boidParams.align=1.5;boidParams.targetVelocity=1;responseKey='calm';}else if(command.includes('fast')){boidParams.targetVelocity=Math.min(5,boidParams.targetVelocity+1.5);responseKey='fast';}else if(command.includes('slow')){boidParams.targetVelocity=Math.max(0.5,boidParams.targetVelocity-1.5);responseKey='slow';}else if(command.includes('together')){boidParams.cohesion=2.0;boidParams.separation=0.5;responseKey='together';}else if(command.includes('apart')){boidParams.cohesion=0.2;boidParams.separation=2.8;responseKey='apart';}addAugury(`USER CMD: "${userInput.value}" >>> ${auguryResponses[responseKey]}`);userInput.value='';}
+    submitCommandBtn.addEventListener('click',handleCommand);
+    userInput.addEventListener('keyup',(event)=>{if(event.key==='Enter'){handleCommand();}});
+
+    const paramCtx = document.getElementById('paramChart').getContext('2d');
+    const paramChart = new Chart(paramCtx, {
+        type: 'line',
+        data: {
+            labels: Array.from({length:20},(_,i)=>i),
+            datasets: [{ label: 'Avg Boid Speed', data: Array(20).fill(boidParams.maxSpeed), borderColor: 'blue', backgroundColor:'rgba(0,0,255,0.1)', fill: true, tension:0.1, borderWidth:2 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 6, ticks:{color:'black'} }, x:{display:false} }, plugins: { legend: { display: true, labels:{color:'black'} } } }
+    });
+    setInterval(()=>{boidParams.maxSpeed+=(boidParams.targetVelocity-boidParams.maxSpeed)*0.1;const data=paramChart.data.datasets[0].data;data.push(boidParams.maxSpeed);if(data.length>20){data.shift();}paramChart.update('none');},500);
+
+    const anarchiveCtx = document.getElementById('anarchiveChart').getContext('2d');
+    const anarchiveChartData={labels:['-5h','-4h','-3h','-2h','-1h','Now'],datasets:{events:[{label:'System Events',data:[12,15,11,18,21,13].map(v=>Math.max(1,v+Math.floor(Math.random()*4-2))),backgroundColor:'rgba(255,0,0,0.7)',borderColor:'red',borderWidth:1}],interactions:[{label:'User Interactions',data:[5,8,12,7,15,2].map(v=>Math.max(1,v+Math.floor(Math.random()*3-1))),backgroundColor:'rgba(0,255,0,0.7)',borderColor:'green',borderWidth:1}]}};
+    const anarchiveChart = new Chart(anarchiveCtx, {
+        type: 'bar',
+        data: { labels: anarchiveChartData.labels, datasets: anarchiveChartData.datasets.events },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'black'} }, x:{ticks:{color:'black'}} }, plugins: { title: { display: true, text: 'Anarchive Data: System Events', color:'black' }, legend:{labels:{color:'black'}} } }
+    });
+    const anarchiveBtns = document.querySelectorAll('.anarchive-btn');
+    anarchiveBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.id === 'anarchive-events-btn') {
+                anarchiveChart.data.datasets = anarchiveChartData.datasets.events;
+                anarchiveChart.options.plugins.title.text = 'Anarchive Data: System Events';
+            } else {
+                anarchiveChart.data.datasets = anarchiveChartData.datasets.interactions;
+                anarchiveChart.options.plugins.title.text = 'Anarchive Data: User Interactions';
+            }
+            anarchiveChart.update();
+        });
+    });
+    
+    // Add a <blink_css> style for the 90s blinking text
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = "blink_css { animation: blinkEffect 1s step-end infinite; }";
+    document.head.appendChild(styleSheet);
+
+});
+</script>
+</body>
+</html>
